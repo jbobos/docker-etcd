@@ -1,0 +1,23 @@
+# Etcd cluster in Docker
+# https://github.com/etcd-io/etcd/blob/master/Documentation/op-guide/container.md#docker
+#
+version: '3.1'
+services:
+  etcd:
+    image: etcd:1.0.0-alpine
+    build:
+      context: .
+    networks:
+    - net_etcd
+    ports:
+    - 2379 # client API
+    - 2380 # peer API
+    volumes:
+    - vol_etcd:/etcd-data
+
+networks:
+  net_etcd:
+
+volumes:
+  vol_etcd:
+
