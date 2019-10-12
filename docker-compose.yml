@@ -4,14 +4,14 @@
 version: '3.1'
 services:
   etcd:
-    image: etcd:1.0.0-alpine
+    image: etcd:3.3.12-alpine
     build:
       context: .
     networks:
     - net_etcd
-    ports:
-    - 2379 # client API
-    - 2380 # peer API
+    expose:
+    - 2379 # client communication
+    - 2380 # server-to-server communication
     volumes:
     - vol_etcd:/etcd-data
 

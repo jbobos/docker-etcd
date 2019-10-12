@@ -1,9 +1,24 @@
 #!/bin/sh
 set -ex
 
-# env vars
+# find my ip
 THIS_IP="$(ip addr show eth0 | grep -m 1 -E -o 'inet [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | awk '{print $2}')"
-THIS_NAME=etcd-node-$HOSTNAME
+
+# find my hostname from docker embeded DNS server
+THIS_NAME="$(dig +short -x $THIS_IP | cut -d'.' -f1)"
+
+# find all containers from docker dns by service name
+# then make up the initial cluster
+SERVICE_NAME="$(echo $THIS_NAME | cut -d'_' -f2)"
+for ip in `dig +short $SERVICE_NAME`
+do
+  name="$(dig +short -x $ip | cut -d'.' -f1)"
+  if [ -z "$THIS_CLUSTER" ]; then 
+    THIS_CLUSTER=$name=http://$ip:2380
+  else
+    THIS_CLUSTER=$THIS_CLUSTER,$name=http://$ip:2380
+  fi
+done
 
 # https://github.com/etcd-io/etcd/blob/master/etcd.conf.yml.sample
 cat >>/etc/etcd.conf <<EOF
@@ -67,7 +82,7 @@ discovery-proxy:
 discovery-srv:
 
 # Initial cluster configuration for bootstrapping.
-initial-cluster:
+initial-cluster: $THIS_CLUSTER
 
 # Initial cluster token for the etcd cluster during bootstrap.
 initial-cluster-token: 'etcd-cluster'
