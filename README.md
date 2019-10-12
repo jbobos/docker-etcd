@@ -1,1 +1,1 @@
-# docker-etcd
+# etcd cluster in Docker
