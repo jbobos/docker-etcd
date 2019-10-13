@@ -3,21 +3,32 @@
 #
 version: '3.1'
 services:
-  etcd:
-    image: etcd:3.3.12-alpine
+  etcd-node:
+    image: etcd-node:3.3.12-alpine
     build:
       context: .
+      args:
+      - mode=node
     networks:
     - net_etcd
-    expose:
-    - 2379 # client communication
-    - 2380 # server-to-server communication
     volumes:
     - vol_etcd:/etcd-data
+
+  etcd-proxy:
+    image: etcd-proxy:3.3.12-alpine
+    build:
+      context: .
+      args:
+      - mode=proxy
+    environment:
+    - ETCD_SERVICE_NAME=etcd-node
+    networks:
+    - net_etcd
+    depends_on:
+    - etcd-node
 
 networks:
   net_etcd:
 
 volumes:
   vol_etcd:
-

@@ -164,4 +164,5 @@ auto-compaction-mode: periodic
 auto-compaction-retention: "1"
 EOF
 
-exec "$@"
+# start etcd use the generated configuration file
+etcd --config-file /etc/etcd.conf
