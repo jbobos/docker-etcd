@@ -4,24 +4,24 @@
 version: '3.1'
 services:
   etcd-node:
-    image: etcd-node:3.3.12-alpine
+    image: etcd:3.3.12-alpine
     build:
       context: ./etcd
-      args:
-      - mode=node
+    environment:
+    - ETCD_RUNNING_MODE=node
+    - ETCD_WAIT_FOR_START=2
     networks:
     - net_etcd
     volumes:
     - vol_etcd:/etcd-data
 
   etcd-proxy:
-    image: etcd-proxy:3.3.12-alpine
+    image: etcd:3.3.12-alpine
     build:
       context: ./etcd
-      args:
-      - mode=proxy
     environment:
-    - ETCD_SERVICE_NAME=etcd-node
+    - ETCD_RUNNING_MODE=proxy
+    - ETCD_NODE_SERVICE=etcd-node
     networks:
     - net_etcd
     depends_on:
