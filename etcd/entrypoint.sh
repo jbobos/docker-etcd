@@ -51,8 +51,8 @@ start_etcd_proxy() {
 
   # start etcd proxy
   etcd grpc-proxy start --endpoints=$ENDPOINTS \
-    --listen-addr=$LISTEN_ADDR \
-    --advertise-client-url=$LISTEN_ADDR \
+    --listen-addr=$THIS_IP:2379 \
+    --advertise-client-url=$THIS_IP:2379 \
     --resolver-prefix="___grpc_proxy_endpoint" \
     --resolver-ttl=60
 }
